@@ -8,7 +8,6 @@ CREATE TABLE `shippers` (
   PRIMARY KEY (`shipper_id`)
 );
 
--- Insert dummy shippers
 INSERT INTO `shippers` (`name`) VALUES
 ('FastTrack Logistics'),
 ('Global Freight'),
