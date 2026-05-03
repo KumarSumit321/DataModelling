@@ -1,0 +1,3 @@
+DROP DATABASE IF EXISTS `store_schema`;
+CREATE DATABASE `store_schema`;
+USE `store_schema`;
