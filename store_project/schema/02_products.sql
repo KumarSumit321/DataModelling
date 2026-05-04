@@ -1,4 +1,3 @@
--- Different sql for different tables
 USE `store_schema`;
 SET FOREIGN_KEY_CHECKS = 0;
 
