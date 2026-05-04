@@ -19,28 +19,16 @@ CREATE TABLE `orders` (
   CONSTRAINT `fk_orders_shippers` FOREIGN KEY (`shipper_id`) REFERENCES `shippers` (`shipper_id`) ON UPDATE CASCADE
 );
 
+-- Insert dummy orders
 INSERT INTO `orders` (`customer_id`, `order_date`, `status`, `comments`, `shipped_date`, `shipper_id`) VALUES
 (1, '2023-10-01', 4, 'Leave at front door', '2023-10-03', 1),
 (2, '2023-10-05', 2, NULL, '2023-10-06', 2),
 (3, '2023-10-10', 1, 'Please rush', NULL, NULL);
 
--- Trigger: Prevent Backward Status
--- Error if someone tries to move status backward
-DELIMITER //
-DROP TRIGGER IF EXISTS `trg_prevent_backward_status`//
-CREATE TRIGGER `trg_prevent_backward_status`
-BEFORE UPDATE ON `orders`
-FOR EACH ROW
-BEGIN
-    IF NEW.status < OLD.status AND OLD.status != 3 THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Order status cannot be moved backward unless it is cancelled.';
-    END IF;
-END//
-DELIMITER ;
-
 -- Trigger: Restore stock if an order is cancelled
+-- When an order status is updated to 3 (Cancelled), restore the product quantity
 DELIMITER //
+
 DROP TRIGGER IF EXISTS `trg_after_order_cancel`//
 CREATE TRIGGER `trg_after_order_cancel`
 AFTER UPDATE ON `orders`
@@ -54,6 +42,7 @@ BEGIN
         WHERE oi.order_id = NEW.order_id;
     END IF;
 END//
+
 DELIMITER ;
 
 SET FOREIGN_KEY_CHECKS = 1;
